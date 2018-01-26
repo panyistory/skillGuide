@@ -14,11 +14,13 @@ public class DAO {
 	Statement stmt = null;
 	ResultSet rset = null;
 
+	int[] skillIdx = null;
+	int i = 2;
+
 	public int startConn() {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			conn = DriverManager.getConnection(url, userId, userPw);
-			System.out.println("Connect Object Execute Success !");
 			return 1;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -30,11 +32,9 @@ public class DAO {
 		try {
 			if (startConn() == 1) {
 				stmt = conn.createStatement();
-				System.out.println("Statement Object Execute Success !");
 				return 1;
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 
@@ -42,19 +42,23 @@ public class DAO {
 	}
 
 	public int selectDb(String jobName) {
-		String query = "select * from job where name = 'worrior_1'";
+		String query = "select * from job where name = '" + jobName + "'";
 
 		try {
 			if (startStmt() == 1) {
 				rset = stmt.executeQuery(query);
 
-				 while(rset.next()){
-					 for(int i=2;i<6;i++)
-					 System.out.println(rset.getInt(i));
-				 }
+				while (rset.next()) {
+					while (rset.getString(i) != null)
+						i++;
+
+					skillIdx = new int[i - 2];
+
+					for (i = 2; rset.getString(i) != null; i++)
+						skillIdx[i - 2] = rset.getInt(i);
+				}
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		} finally {
 			try {
@@ -66,7 +70,6 @@ public class DAO {
 					conn.close();
 
 			} catch (Exception e2) {
-				// TODO: handle exception
 				e2.printStackTrace();
 			}
 		}
