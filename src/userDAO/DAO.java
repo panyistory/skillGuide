@@ -1,4 +1,4 @@
-package userDb;
+package userDAO;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,8 +14,9 @@ public class DAO {
 	Statement stmt = null;
 	ResultSet rset = null;
 
-	int[] skillIdx = null;
-	int i = 2;
+	public DAO() {
+
+	}
 
 	public int startConn() {
 		try {
@@ -41,22 +42,11 @@ public class DAO {
 		return -1;
 	}
 
-	public int selectDb(String jobName) {
-		String query = "select * from job where name = '" + jobName + "'";
-
+	public int modifyDb(DTO dto) {
+		String query = "update job set skill_1='" + dto.getSkill_1() + "', skill_2='" + dto.getSkill_2() + "', skill_3='" + dto.getSkill_3() + "', skill_4='" + dto.getSkill_4() + "' where name='" + dto.getName() + "'";
 		try {
 			if (startStmt() == 1) {
-				rset = stmt.executeQuery(query);
-
-				while (rset.next()) {
-					while (rset.getString(i) != null)
-						i++;
-
-					skillIdx = new int[i - 2];
-
-					for (i = 2; rset.getString(i) != null; i++)
-						skillIdx[i - 2] = rset.getInt(i);
-				}
+			return stmt.executeUpdate(query);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -73,8 +63,45 @@ public class DAO {
 				e2.printStackTrace();
 			}
 		}
+		return 0;
+	}
 
-		return -1;
+	public DTO selectDb(String job) {
+		String query = "select * from job where name = '" + job + "'";
+		int[] skillIdx = new int[4];
+		DTO dto = new DTO();
+		try {
+			if (startStmt() == 1) {
+				rset = stmt.executeQuery(query);
+
+				while (rset.next()) {
+					dto.setName(rset.getString(1));
+					skillIdx[0] = rset.getInt(2);
+					skillIdx[1] = rset.getInt(3);
+					skillIdx[2] = rset.getInt(4);
+					skillIdx[3] = rset.getInt(5);
+					dto.setSkillIdx(skillIdx);
+				}
+			}
+			return dto;
+			// return dto;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rset != null)
+					rset.close();
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+
+		return dto;
 	}
 
 }

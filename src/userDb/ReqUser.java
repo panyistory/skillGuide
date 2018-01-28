@@ -9,6 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import userCommand.BCommand;
+import userCommand.ReadCommand;
+import userCommand.WriteCommand;
+
 /**
  * Servlet implementation class ReqUser
  */
@@ -27,7 +31,8 @@ public class ReqUser extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		frontDo(request, response);
 	}
 
@@ -35,34 +40,33 @@ public class ReqUser extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		frontDo(request, response);
 	}
 
 	protected void frontDo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String viewPage = null;
+		BCommand command = null;
+		String reqUrl = request.getRequestURI().toString().substring(request.getContextPath().length());
 
-		if (request.getRequestURI().equals("/skillGuide/write.do")) {
-			response.sendRedirect("write/write.jsp?job="+request.getParameter("job"));
-		} else if (request.getRequestURI().equals("/skillGuide/read.do")
-				&& (request.getParameter("job").equals("worrior_1") || request.getParameter("job").equals("worrior_2")
-						|| request.getParameter("job").equals("worrior_3")
-						|| request.getParameter("job").equals("worrior_4"))) {
-			
-			// DAO 객체 만들어서 DB 접근 시도
-			DAO dao = new DAO();
-			// 파라미터 값(파라미터 명: job)을 인자료 테이블에서 검색해서 배열에 저장 dao.skillIdx 배열에 저장
-			dao.selectDb(request.getParameter("job"));
-
-			// Request 속성 지정
-			for (int i = 1; i <= dao.i - 2; i++)
-				request.setAttribute("skill_" + i, dao.skillIdx[i - 1]);
-
-			// RequestDispacher
-			RequestDispatcher dispacher = request.getRequestDispatcher("read/"+request.getParameter("job") + ".jsp");
-			dispacher.forward(request, response);
+		if (reqUrl.equals("/read.do")) {
+			command = new ReadCommand();
+			command.execute(request, response);
+			viewPage = "jobInfo.jsp?job=" + request.getParameter("job");;
+		}else if (reqUrl.equals("/write.do")) { // 공략 수정을 들어 갔을 경우
+			command = new ReadCommand();
+			command.execute(request, response);
+			viewPage = "write.jsp?job=" + request.getParameter("job");;
+		}else if (reqUrl.equals("/write_apply.do")) { // wirte.jsp 페이지 에서 적용을 눌렀을 경우
+			command = new WriteCommand();
+			command.execute(request, response);
+			viewPage = "index.jsp";
 		}
-		else {
-			System.out.println("Error !");
-		}
+
+		// RequestDispacher
+		RequestDispatcher dispacher = request.getRequestDispatcher(viewPage);
+		dispacher.forward(request, response);
+
 	}
 }
