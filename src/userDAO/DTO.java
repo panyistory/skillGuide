@@ -1,74 +1,42 @@
 package userDAO;
 
 public class DTO {
-	String name = null;
-	int skill_1;
-	int skill_2;
-	int skill_3;
-	int skill_4;
-	int[] skillIdx = new int[4];
+	String id = null;
+	String pw = null;
+	String eMail = null;
 	
-	// 기본 생성자
-	public DTO() {
-		// TODO Auto-generated constructor stub
+	public DTO(String id, String pw, String eMail) {
+		this.id = id;
+		this.pw = pw;
+		this.eMail = eMail;
 	}
 	
-	public DTO(String name, int skill_1, int skill_2, int skill_3, int skill_4) {
-		this.name = name;
-		this.skill_1 = skill_1;
-		this.skill_2 = skill_2;
-		this.skill_3 = skill_3;
-		this.skill_4 = skill_4;
+	public DTO(String id, String pw) {
+		this.id = id;
+		this.pw = pw;
 	}
 
-	// Getter and Setter
-	public String getName() {
-		return name;
+	public String getId() {
+		return id;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public int getSkill_1() {
-		return skill_1;
+	public String getPw() {
+		return pw;
 	}
 
-	public void setSkill_1(int skill_1) {
-		this.skill_1 = skill_1;
+	public void setPw(String pw) {
+		this.pw = pw;
 	}
 
-	public int getSkill_2() {
-		return skill_2;
+	public String geteMail() {
+		return eMail;
 	}
 
-	public void setSkill_2(int skill_2) {
-		this.skill_2 = skill_2;
+	public void seteMail(String eMail) {
+		this.eMail = eMail;
 	}
-
-	public int getSkill_3() {
-		return skill_3;
-	}
-
-	public void setSkill_3(int skill_3) {
-		this.skill_3 = skill_3;
-	}
-
-	public int getSkill_4() {
-		return skill_4;
-	}
-
-	public void setSkill_4(int skill_4) {
-		this.skill_4 = skill_4;
-	}
-
-	public int[] getSkillIdx() {
-		return skillIdx;
-	}
-
-	public void setSkillIdx(int[] skillIdx) {
-		this.skillIdx = skillIdx;
-	}
-	
-	
 }

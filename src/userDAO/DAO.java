@@ -5,6 +5,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import javax.servlet.http.HttpSession;
+
+import org.apache.catalina.connector.Request;
+
 public class DAO {
 	String url = "jdbc:oracle:thin:@localhost:1521:xe";
 	String userId = "scott";
@@ -13,6 +17,8 @@ public class DAO {
 	Connection conn = null;
 	Statement stmt = null;
 	ResultSet rset = null;
+
+	String query = null;
 
 	public DAO() {
 
@@ -42,66 +48,66 @@ public class DAO {
 		return -1;
 	}
 
-	public int modifyDb(DTO dto) {
-		String query = "update job set skill_1='" + dto.getSkill_1() + "', skill_2='" + dto.getSkill_2() + "', skill_3='" + dto.getSkill_3() + "', skill_4='" + dto.getSkill_4() + "' where name='" + dto.getName() + "'";
-		try {
-			if (startStmt() == 1) {
-			return stmt.executeUpdate(query);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
+	public int userJoin(DTO userInputDto) {
+		int status = 0;
+		if (startStmt() == 1) {
+			query = "SELECT ID FROM SKILLGUIDE_USERDB WHERE ID='" + userInputDto.id + "'";
 			try {
-				if (rset != null)
-					rset.close();
-				if (stmt != null)
-					stmt.close();
-				if (conn != null)
-					conn.close();
-
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
-		}
-		return 0;
-	}
-
-	public DTO selectDb(String job) {
-		String query = "select * from job where name = '" + job + "'";
-		int[] skillIdx = new int[4];
-		DTO dto = new DTO();
-		try {
-			if (startStmt() == 1) {
 				rset = stmt.executeQuery(query);
-
-				while (rset.next()) {
-					dto.setName(rset.getString(1));
-					skillIdx[0] = rset.getInt(2);
-					skillIdx[1] = rset.getInt(3);
-					skillIdx[2] = rset.getInt(4);
-					skillIdx[3] = rset.getInt(5);
-					dto.setSkillIdx(skillIdx);
+				if (!rset.next()) {
+					query = "INSERT INTO SKILLGUIDE_USERDB VALUES('" + userInputDto.id + "', '" + userInputDto.pw
+							+ "', '" + userInputDto.eMail + "')";
+					stmt.executeUpdate(query);
+				}
+				
+				status = 1;
+			} catch (Exception e) {
+				e.printStackTrace();
+				status = 0;
+			} finally {
+				try {
+					if (rset != null)
+						rset.close();
+					if (stmt != null)
+						stmt.close();
+					if (conn != null)
+						conn.close();
+				} catch (Exception e2) {
+					e2.printStackTrace();
 				}
 			}
-			return dto;
-			// return dto;
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rset != null)
-					rset.close();
-				if (stmt != null)
-					stmt.close();
-				if (conn != null)
-					conn.close();
-
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
 		}
-
-		return dto;
+		return status;
 	}
 
+	public int userLogin(DTO userInputDto) {
+		int status = 0;
+		if (startStmt() == 1) {
+			query = "SELECT ID, PW FROM SKILLGUIDE_USERDB WHERE ID='" + userInputDto.id + "' and PW='" + userInputDto.pw +"'";
+			try {
+				rset = stmt.executeQuery(query);
+				
+				if(rset.next())
+					status = 1;
+				else
+					status = 0;
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				status = 0;
+			} finally {
+				try {
+					if (rset != null)
+						rset.close();
+					if (stmt != null)
+						stmt.close();
+					if (conn != null)
+						conn.close();
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
+			}
+		}
+		return status;
+	}
 }

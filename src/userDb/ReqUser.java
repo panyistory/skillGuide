@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import userCommand.BCommand;
+import userCommand.BjoinCmd;
+import userCommand.BloginCmd;
 import userCommand.ReadCommand;
 import userCommand.WriteCommand;
 
@@ -50,18 +52,15 @@ public class ReqUser extends HttpServlet {
 		BCommand command = null;
 		String reqUrl = request.getRequestURI().toString().substring(request.getContextPath().length());
 
-		if (reqUrl.equals("/read.do")) {
-			command = new ReadCommand();
-			command.execute(request, response);
-			viewPage = "jobInfo.jsp?job=" + request.getParameter("job");;
-		}else if (reqUrl.equals("/write.do")) { // 공략 수정을 들어 갔을 경우
-			command = new ReadCommand();
-			command.execute(request, response);
-			viewPage = "write.jsp?job=" + request.getParameter("job");;
-		}else if (reqUrl.equals("/write_apply.do")) { // wirte.jsp 페이지 에서 적용을 눌렀을 경우
-			command = new WriteCommand();
+		if(reqUrl.equals("/loginOk.do")) {
+			command = new BloginCmd();
 			command.execute(request, response);
 			viewPage = "index.jsp";
+		}
+		else if (reqUrl.equals("/joinOk.do")) {
+			command = new BjoinCmd();
+			command.execute(request, response);
+			viewPage = "index.jsp"; // to be continue : joginSuccess page create plz
 		}
 
 		// RequestDispacher
